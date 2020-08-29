@@ -20,14 +20,14 @@ parallel.
 
 ### Installing
 
-After setting up the prerequisites, open `water-coupler/__init__.py` and
+After setting up the prerequisites, open `watercoupler/__init__.py` and
 give the full path to the directory that contains `pyadcirc.so` and to the
-`gsshapython` directory. Open `water-coupler/__main__.py` and add the full path
-to the directory containing the `water-coupler` folder.
+`gsshapython` directory. Open `watercoupler/__main__.py` and add the full path
+to the directory containing the `watercoupler` folder.
 
 ### Running tests
 
-Currently, no automated tests have been enabled for `water-coupler`.
+Currently, no automated tests have been enabled for `watercoupler`.
 
 
 ## Using the project
@@ -35,7 +35,7 @@ Currently, no automated tests have been enabled for `water-coupler`.
 Suppose you want to run a coupled ADCIRC-GSSHA simulation, with ADCIRC files
 named `fort.*` and GSSHA files named `Stream*`, including the project file
 `Stream.prj`. Copy the ADCIRC and GSSHA input files in a single directory. Copy
-or add a symlink/shortcut to `water-coupler/__main__.py` into this directory,
+or add a symlink/shortcut to `watercoupler/__main__.py` into this directory,
 naming it as, say, `watercoupler.py` and run the file. Run this file with
 command line arguments as follows.
  - Argument 1: Boundary string ID of the ADCIRC model that is being coupled,
@@ -52,7 +52,7 @@ mkdir sample-sim
 cd sample-sim
 cp <path_to_ADCIRC_input_files>/fort.* .
 cp <path_to_GSSHA_input_files>/Stream* .
-cp <path_to_water-coupler_folder>/__main__.py watercoupler.py
+cp <path_to_watercoupler_folder>/__main__.py watercoupler.py
 
 python watercoupler.py \
     <ADCIRC model coupled boundary> \
