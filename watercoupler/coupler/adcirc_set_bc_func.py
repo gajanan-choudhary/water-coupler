@@ -127,7 +127,7 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
     else:
         # Shift values backward
         ags.pg.qtime1 = ags.pg.qtime2
-        for i in range(ags.pb.nvel*2):
+        for i in range(ags.pb.nvel):
             ags.pg.qnin1[i] = ags.pg.qnin2[i]
         # Replace the fort.20 file.
         with open(ags.adcircfort20pathname, 'w') as fort20file:
