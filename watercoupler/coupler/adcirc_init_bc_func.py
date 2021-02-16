@@ -20,10 +20,11 @@ def adcirc_init_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct
 
     ######################################################
     # Store the length of the coupled ADCIRC edge string
+    # Valid only for open boundary and not a closed one!
     for inode in range(1,ags.adcircedgestringnnodes):
         # -1 needed below since Python is 0 indexed whereas Fortan node numbers are 1-indexed
-        n1 = ags.pb.nbvv[ags.adcircedgestringid][inode  ]-1
-        n2 = ags.pb.nbvv[ags.adcircedgestringid][inode+1]-1
+        n1 = ags.adcircedgestringnodes[inode-1]-1
+        n2 = ags.adcircedgestringnodes[inode  ]-1
         x1 = ags.pm.x[n1]
         y1 = ags.pm.y[n1]
         x2 = ags.pm.x[n2]

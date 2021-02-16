@@ -38,9 +38,9 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
         my_avg_delta_eta=0.0
         my_eta_sum=0.0
 
-        for inode in range(1,ags.adcircedgestringnnodes+1):
+        for inode in range(ags.adcircedgestringnnodes):
             # -1 needed below since Python is 0 indexed whereas Fortan node numbers are 1-indexed
-            node = ags.pb.nbvv[ags.adcircedgestringid][inode]-1
+            node = ags.adcircedgestringnodes[inode]-1
             eta     = ags.pg.eta2[node]
             old_eta = ags.pg.eta1[node]
             my_eta_sum       += eta
