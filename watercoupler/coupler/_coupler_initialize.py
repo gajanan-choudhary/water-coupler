@@ -73,7 +73,7 @@ def adcircgssha_coupler_initialize(self, argc, argv):
     #SET UP COUPLED STRUCT.
     ######################################################
     self.couplingtype=argv[argc.value-3]
-    #self.couplingdtfactor = 480 #in case of original Gal-brays-coupling
+    self.couplingdtfactor = 480 #in case of original Gal-brays-coupling
     self.adcircrunflag=pu.on
     self.adcirctstart=0.+self.pg.statim*86400.0 #statim is in days.
     self.adcircdt=0.+self.pg.dt*float(self.couplingdtfactor) #Needed 0+ to prevent the two from being the same object :-/ Careful!!!!
