@@ -61,6 +61,7 @@ class adcircgsshastruct(): #Note: This is not a ctypes Structure!!!!
         self.adcircseries=0
         self.adcircedgestringid=self.pu.unset_int
         self.adcircedgestringnnodes=self.pu.unset_int
+        self.adcircedgestringnodes=[]
         self.adcircedgestringlen=0.0
         self.adcircfort20pathname=''
         self.adcirc_hprev=0.0   # Avg depth

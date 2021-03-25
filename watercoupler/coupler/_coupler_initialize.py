@@ -73,7 +73,7 @@ def adcircgssha_coupler_initialize(self, argc, argv):
     #SET UP COUPLED STRUCT.
     ######################################################
     self.couplingtype=argv[argc.value-3]
-    self.couplingdtfactor = 480
+    self.couplingdtfactor = 480 #in case of original Gal-brays-coupling
     self.adcircrunflag=pu.on
     self.adcirctstart=0.+self.pg.statim*86400.0 #statim is in days.
     self.adcircdt=0.+self.pg.dt*float(self.couplingdtfactor) #Needed 0+ to prevent the two from being the same object :-/ Careful!!!!
@@ -85,7 +85,8 @@ def adcircgssha_coupler_initialize(self, argc, argv):
     self.adcircfort20pathname=''.join(np.append(np.char.strip(self.ps.inputdir),'/fort.20.new.'+self.couplingtype))
     self.adcircedgestringid=int(argv[argc.value-4])-1
     self.adcircedgestringnnodes=self.pb.nvell[self.adcircedgestringid]
-    self.adcircedgestringnodes=self.pb.nbvv[1:self.adcircedgestringnnodes]
+    # We are only accounting for open boundaries and not for closed loops here:
+    self.adcircedgestringnodes=self.pb.nbvv[self.adcircedgestringid][1:self.adcircedgestringnnodes+1]
     self.gssharunflag=gsshadefine.ON
     self.gsshatstartjul=self.mvs[0].btime # in Julian date
     self.gsshadt=self.mvs[0].dt # in seconds
