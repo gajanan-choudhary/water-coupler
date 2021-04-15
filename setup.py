@@ -12,7 +12,7 @@ watercoupler_cmds = ['watercoupler = watercoupler.__main__:main']
 
 setup(
     name='watercoupler',
-    version='0.1.0',
+    version='0.2.0',
     description='Program for coupling hydrodynamic and hydrologic software',
     keywords='Coupling, hydrologic, hydrodynamic, ADCIRC, GSSHA',
     long_description=readme,
