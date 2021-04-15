@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 from setuptools import setup, find_packages
 
@@ -20,7 +20,7 @@ setup(
     author_email='gajananchoudhary91@gmail.com',
     url='https://github.com/gajanan-choudhary/water-coupler',
     license=license,
-    packages=find_packages(exclude=('tests', 'doc')),
+    packages=find_packages(exclude=["*tests.*", "*tests", 'doc']),
     entry_points={'console_scripts': watercoupler_cmds},
     package_dir={'': '.'},
     package_data={'': []},

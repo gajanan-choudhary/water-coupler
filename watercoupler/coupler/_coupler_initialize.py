@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
+from sys import version_info as _version_info
 
 import numpy as np
 from ctypes import byref as ctypes_byref
@@ -10,14 +12,14 @@ from ctypes import byref as ctypes_byref
 DEBUG_LOCAL = 0
 
 ################################################################################
-def adcircgssha_coupler_initialize(self, argc, argv):
+def adcircgssha_coupler_initialize(self, couplingtype, argc, argv):
     # argv[argc-1] must be ADCIRC model
     # argv[argc-2] must by GSSHA model
     # argv[argc-3] must be coupling type: 'gda', 'adg', 'gdadg', 'adgda'
     # argv[argc-4] must be edge string ID of the ADCIRC model that we are coupling to
 
     ######################################################
-    import pyadcirc as pa
+    import pyADCIRC.pyadcirc as pa
     ps    = pa.sizes
     pg    = pa.pyglobal
     pm    = pa.pymesh
@@ -62,17 +64,17 @@ def adcircgssha_coupler_initialize(self, argc, argv):
     #SET UP GSSHA.
     ######################################################
     if gsshaopts._DEBUG == gsshadefine.ON and DEBUG_LOCAL != 0:
-        print "\nInitializing GSSHA\n"
+        print("\nInitializing GSSHA\n")
     prj_name = argv[argc.value-2]
     ierr_code = gsshafnctn.main_gssha_initialize(ctypes_byref(self.mvs), prj_name, None, prj_name)
     assert(ierr_code == 0) #Since sm is not NULL now
-    print "********************** GSSHA Initialized **********************"
-    print "***************************************************************"
+    print("********************** GSSHA Initialized **********************")
+    print("***************************************************************")
 
     ######################################################
     #SET UP COUPLED STRUCT.
     ######################################################
-    self.couplingtype=argv[argc.value-3]
+    self.couplingtype=couplingtype #argv[argc.value-3]
     self.couplingdtfactor = 480 #in case of original Gal-brays-coupling
     self.adcircrunflag=pu.on
     self.adcirctstart=0.+self.pg.statim*86400.0 #statim is in days.
@@ -82,7 +84,11 @@ def adcircgssha_coupler_initialize(self, argc, argv):
     self.adcirctnext=self.adcirctprev
     self.adcirctfinal=(self.pg.statim + self.pg.rnday)*86400.0
     self.adcircntsteps=0+self.pmain.itime_end #Needed 0+ to prevent the two from being the same object :-/ Careful!!!!
-    self.adcircfort20pathname=''.join(np.append(np.char.strip(self.ps.inputdir),'/fort.20.new.'+self.couplingtype))
+    if (_version_info < (3, 0)):
+        inputdir = self.ps.inputdir
+    else:
+        inputdir = str(self.ps.inputdir, 'utf-8')
+    self.adcircfort20pathname=''.join(np.append(np.char.strip(inputdir),'/fort.20.new.'+self.couplingtype))
     self.adcircedgestringid=int(argv[argc.value-4])-1
     self.adcircedgestringnnodes=self.pb.nvell[self.adcircedgestringid]
     # We are only accounting for open boundaries and not for closed loops here:

@@ -11,33 +11,35 @@ parallel.
 
 ### Dependencies
 
-* [Python 2.7](https://www.python.org/downloads/release/python-2718/) - for now.
+* Python 2x or 3x (tested on 2.7 and 3.6),
 * [NumPy](https://numpy.org/)
-* ADCIRC shared library   : `libadcpy.so`
-* ADCIRC python interface : `pyadcirc.so`
+* ADCIRC shared libraries : `libadcpy.so`/`libpadcpy.so` and `pyadcirc.so`
+* ADCIRC python interface : `pyADCIRC`
 * GSSHA shared library    : `libgssha.so`
 * GSSHA python interface  : `gsshapython`
 
 ### Installing
 
-After setting up the prerequisites, open `watercoupler/__init__.py` and
-give the full path to the directory that contains `pyadcirc.so` and to the
-`gsshapython` directory. Open `watercoupler/__main__.py` and add the full path
-to the directory containing the `watercoupler` folder.
+After (pip-) installing the prerequisites, `pyADCIRC` and `gsshapython`,
+pip-install `watercoupler` as well, as follows:
+```bash
+cd <path_to_water-coupler_repo_root>
+python3 -m pip install .
+```
 
 ### Running tests
 
-Currently, no automated tests have been enabled for `watercoupler`.
+Currently, no automated tests have been enabled for `watercoupler`. However, a
+repository of testcases is being developed; see
+[water-coupler-tests](https://github.com/gajanan-choudhary/water-coupler-tests).
 
 
 ## Using the project
 
 Suppose you want to run a coupled ADCIRC-GSSHA simulation, with ADCIRC files
 named `fort.*` and GSSHA files named `Stream*`, including the project file
-`Stream.prj`. Copy the ADCIRC and GSSHA input files in a single directory. Copy
-or add a symlink/shortcut to `watercoupler/__main__.py` into this directory,
-naming it as, say, `watercoupler.py` and run the file. Run this file with
-command line arguments as follows.
+`Stream.prj`. Copy the ADCIRC and GSSHA input files in a single directory. Run
+`watercoupler` as a python module with the following command line arguments:
  - Argument 1: Boundary string ID of the ADCIRC model that is being coupled,
  - Argument 2: One of the following coupling type identifiers,
    * `Adg`   - One-way coupling with ADCIRC driving GSSHA,
@@ -45,27 +47,27 @@ command line arguments as follows.
    * `AdgdA` - Two-way coupling with ADCIRC "driving" (staying ahead of) GSSHA,
    * `gdAdg` - Two-way coupling with GSSHA "driving" (staying ahead of) ADCIRC,
  - Argument 3: Name of GSSHA Project file, e.g., `Stream.prj`, and
- - Argument 4: Name of ADCIRC Project file, e.g., `fort`.
+ - Argument 4: Name of ADCIRC Project file, e.g., `fort` (currently ignored).
+
 For instance, the Linux/Unix workflow goes as follows.
 ```bash
 mkdir sample-sim
 cd sample-sim
-cp <path_to_ADCIRC_input_files>/fort.* .
-cp <path_to_GSSHA_input_files>/Stream* .
-cp <path_to_watercoupler_folder>/__main__.py watercoupler.py
+cp -r <path_to_ADCIRC_input_files>/* .
+cp -r <path_to_GSSHA_input_files>/* .
 
-python watercoupler.py \
+python3 -m watercoupler \
     <ADCIRC model coupled boundary> \
     <Coupling type identifier> \
     <GSSHA project file name> \
     <ADCIRC project file name without extension>
 ```
 
-For parallel runs when ADCIRC has been compiled in parallel using OpenMPI, use
+For parallel runs when pyADCIRC has been compiled in parallel, you may run
+```bash
+mpirun  -np <num_procs>  python3 -m watercoupler.py  3  AdgdA  Stream.prj  fort
 ```
-mpirun  -np  <num_procs>  python  watercoupler.py  3  AdgdA  Stream.prj  fort
-```
-where `<num_procs>` is the number of processors you want to use.
+for instance, where `<num_procs>` is the number of MPI processes to be used.
 
 
 ## Authors
@@ -84,6 +86,6 @@ cannot and should not be distributed with this software.
 ## Acknowledgments
 
 * [f2py](https://numpy.org/doc/stable/f2py/) documentation
-* [ctypes](https://docs.python.org/2.7/library/ctypes.html) documentation
+* [ctypes](https://docs.python.org/3/library/ctypes.html) documentation
 * [Stackoverflow](https://stackoverflow.com/) community
 

@@ -1,29 +1,29 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 
-############################################################################################################################################################
 import gsshapython.sclass.build_options as gsshaopts
 import gsshapython.sclass.define_h      as gsshadefine
 
-############################################################################################################################################################
+################################################################################
 DEBUG_LOCAL = 1
-############################################################################################################
+################################################################################
 def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
 
-    from adcircgsshastruct import SERIESLENGTH, TIME_TOL
+    from .adcircgsshastruct import SERIESLENGTH, TIME_TOL
 
     ########## Set ADCIRC Boundary Conditions ###########
     # Note: ags.adcircseries already points to the head of series in ADCIRC that needs to be modified.
     nbvStartIndex=sum(ags.pb.nvell[:ags.adcircedgestringid])
     if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0 and ags.myid==0:
-        print "\nOriginal: Flux time increment FTIMINC =", ags.pg.ftiminc,\
+        print("\nOriginal: Flux time increment FTIMINC =", ags.pg.ftiminc,\
                 "\nOriginal: Flux times:\nQTIME1 =", ags.pg.qtime1, \
                 "\nQTIME2 =", ags.pg.qtime2, \
                 "\nOriginal: Flux values:\nQNIN1  =\n",  ags.pg.qnin1[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes], \
-                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes]
+                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes])
 
     if ags.pu.messg == ags.pu.on:
         if ags.myid != 0:
@@ -31,10 +31,10 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
         else:
             messgvout  = ags.mvs[0].vout
         if (ags.pu.debug ==ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) or DEBUG_LOCAL != 0:
-            print 'PE[',ags.myid,'] Before messg: vout = ', ags.mvs[0].vout
-        ags.mvs[0].vout  = ags.pmsg.pymessg_dbl_max(messgvout, ags.adcirc_comm_comp)
+            print('PE[',ags.myid,'] Before messg: vout = ', ags.mvs[0].vout)
+        ags.mvs[0].vout  = ags.pmsg.pymsg_dbl_max(messgvout, ags.adcirc_comm_comp)
         if (ags.pu.debug ==ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) or DEBUG_LOCAL != 0:
-            print 'PE[',ags.myid,'] After messg : vout = ', ags.mvs[0].vout
+            print('PE[',ags.myid,'] After messg : vout = ', ags.mvs[0].vout)
 
     ######################################################
     # Close the original fort.20
@@ -59,19 +59,19 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
             # This is valid only for PE 0 which is running GSSHA. Not on other PEs!
             outlet_area  = ags.mvs[0].area[      ags.mvs[0].nx[ags.mvs[0].nlinks]][ags.mvs[0].nlinks]
             outlet_depth = ags.mvs[0].chan_depth[ags.mvs[0].nx[ags.mvs[0].nlinks]][ags.mvs[0].nlinks]
-            print"outlet area       =", outlet_area, "m2"
-            print"outlet chan_depth =", outlet_depth, "m"
-            print"qout              =", ags.mvs[0].qout, "m3/s"
-            print"voutprev          =", ags.gsshavoutprev, "m3"
-            print"vout              =", ags.mvs[0].vout, "m3"
-            print"DV                =", DV, "m3"
-            print"DT                =", DT, "s"
-            print"GSSHA qout/area   =", ags.mvs[0].qout / outlet_area,"m/s"
-            print"Avg. GSSHA speed  ~", DV / DT / outlet_area, "m/s"
-            print"Avg. ADCIRC speed ~", DV / DT, "(m3/s) / ADCIRC area (needs more work!)"
+            print("outlet area       =", outlet_area, "m2")
+            print("outlet chan_depth =", outlet_depth, "m")
+            print("qout              =", ags.mvs[0].qout, "m3/s")
+            print("voutprev          =", ags.gsshavoutprev, "m3")
+            print("vout              =", ags.mvs[0].vout, "m3")
+            print("DV                =", DV, "m3")
+            print("DT                =", DT, "s")
+            print("GSSHA qout/area   =", ags.mvs[0].qout / outlet_area,"m/s")
+            print("Avg. GSSHA speed  ~", DV / DT / outlet_area, "m/s")
+            print("Avg. ADCIRC speed ~", DV / DT, "(m3/s) / ADCIRC area (needs more work!)")
 
         if DV < 0.0:
-            print"Warning: Outflow from ADCIRC model forced by GSSHA! This can cause instabilities in the model!"
+            print("Warning: Outflow from ADCIRC model forced by GSSHA! This can cause instabilities in the model!")
 
         # Move current to previous: Current is at [2], previous is at [1]
         # Shift values backward
@@ -86,7 +86,7 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
 
         # ADCIRC Series value
         #DT_calculated = ags.adcircseries[0].entry[SERIESLENGTH-2].time - ags.adcircseries[0].entry[SERIESLENGTH-3].time
-        #print"DT_calculated     =", DT_calculated, "s"
+        #print("DT_calculated     =", DT_calculated, "s")
         #DT_calculated affects how the mass is distributed. If we want to dump all the mass from GSSHA into ADCIRC's next time step
         #no matter how large it may be, we should use DT_calculated. For now, I'm skipping DT_calculated.
         oldseriesvalue = ags.pg.qnin2[nbvStartIndex]
@@ -94,7 +94,7 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
         seriesvalue =  ags.mvs[0].qout/ags.adcircedgestringlen
         ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes] = seriesvalue
         with open(ags.adcircfort20pathname, 'w') as fort20file:
-            #print "QNIN values start at", nbvStartIndex
+            #print("QNIN values start at", nbvStartIndex)
             for i in range(ags.pb.nvel):
                 if ags.pb.lbcodei[i] in [2, 12, 22]:
                     [fort20file.write('{0:10f}\n'.format(ags.pg.qnin2[i]))]
@@ -142,13 +142,13 @@ def adcirc_set_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
     assert(errorio==0)
 
     if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0:
-        print "Replaced: Flux time increment FTIMINC =", ags.pg.ftiminc,\
+        print("Replaced: Flux time increment FTIMINC =", ags.pg.ftiminc,\
                 "\nReplaced: Flux times:\nQTIME1 =", ags.pg.qtime1, \
                 "\nQTIME2 =", ags.pg.qtime2, \
                 "\nReplaced: Flux values:\nQNIN1  =\n",  ags.pg.qnin1[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes], \
-                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes]
-        print 'Area   contained  =', ags.adcircseriesarea
-        print 'Volume contained  =', ags.adcircseriesarea*ags.adcircedgestringlen
+                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes])
+        print('Area   contained  =', ags.adcircseriesarea)
+        print('Volume contained  =', ags.adcircseriesarea*ags.adcircedgestringlen)
 
 
 ############################################################################################################

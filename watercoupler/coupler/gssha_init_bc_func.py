@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 
-################################################################################
 import gsshapython.sclass.build_options   as gsshaopts
 import gsshapython.sclass.define_h        as gsshadefine
 import gsshapython.sclass.fnctn_h         as gsshafnctn
@@ -41,10 +41,10 @@ def gssha_init_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
 
     # Note: Hoping whichever depth is closes to GSSHA current depth works better in damping oscillations than dmax alone!
     if (ags.pu.messg==ags.pu.on):
-        eta_sum = ags.pmsg.pymessg_dbl_sum(my_eta_sum, ags.adcirc_comm_comp)
-        max_eta = ags.pmsg.pymessg_dbl_max(my_max_eta, ags.adcirc_comm_comp)
-        min_eta = ags.pmsg.pymessg_dbl_min(my_min_eta, ags.adcirc_comm_comp)
-        count    = ags.pmsg.pymessg_dbl_sum(count      , ags.adcirc_comm_comp)
+        eta_sum = ags.pmsg.pymsg_dbl_sum(my_eta_sum, ags.adcirc_comm_comp)
+        max_eta = ags.pmsg.pymsg_dbl_max(my_max_eta, ags.adcirc_comm_comp)
+        min_eta = ags.pmsg.pymsg_dbl_min(my_min_eta, ags.adcirc_comm_comp)
+        count   = ags.pmsg.pymsg_dbl_sum(count     , ags.adcirc_comm_comp)
     else:
         eta_sum = my_eta_sum
         max_eta = my_max_eta
@@ -52,15 +52,15 @@ def gssha_init_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
     avg_eta = eta_sum/count
     ags.adcirc_hprev = avg_eta # Going to be taking the average.
     ags.adcirc_hprev_len = count # Going to be taking the average.
-    print "PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Starting Average eta2 = ", ags.adcirc_hprev, "count = ", ags.adcirc_hprev_len
+    print("PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Starting Average eta2 = ", ags.adcirc_hprev, "count = ", ags.adcirc_hprev_len)
 
 
     ######################################################
     ts = ags.mvs[0].bound_ts_ptr[0]
     if (ags.pu.debug == ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) and DEBUG_LOCAL != 0 and ags.myid == 0:
-        print '\nSetting up Boundary time series for GSSHA.'
+        print('\nSetting up Boundary time series for GSSHA.')
         for i in range(ts.num_vals):
-            print'Before:(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')'
+            print('Before:(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')')
 
     superdt = 0.0
     while (superdt < ags.adcirctstart + ags.adcircdt):
@@ -78,7 +78,7 @@ def gssha_init_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
 
     if (ags.pu.debug == ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) and DEBUG_LOCAL != 0 and ags.myid == 0:
         for i in range(ts.num_vals):
-            print'After :(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')'
+            print('After :(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')')
     #exit()
 
 ################################################################################
