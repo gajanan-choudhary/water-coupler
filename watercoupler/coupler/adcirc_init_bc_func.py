@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 import numpy as np
 
 ################################################################################
@@ -11,7 +12,7 @@ DEBUG_LOCAL = 1
 ################################################################################
 def adcirc_init_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct.
 
-    from adcircgsshastruct import SERIESLENGTH, TIME_TOL
+    from .adcircgsshastruct import SERIESLENGTH, TIME_TOL
 
     ######################################################
     #SET UP ADCIRC BC series and edgestring.
@@ -33,11 +34,11 @@ def adcirc_init_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct
         dely = y2-y1
         ags.adcircedgestringlen += np.sqrt(delx*delx+dely*dely)
         if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0:
-            print "Nodes ",n1,"(",x1,",",y1,"),",n2,"(",x2,",",y2,")"
+            print("Nodes ",n1,"(",x1,",",y1,"),",n2,"(",x2,",",y2,")")
     if ags.pu.messg==ags.pu.on:
-        ags.adcircedgestringlen = ags.pmsg.pymessg_dbl_sum(ags.adcircedgestringlen, ags.adcirc_comm_comp)
+        ags.adcircedgestringlen = ags.pmsg.pymsg_dbl_sum(ags.adcircedgestringlen, ags.adcirc_comm_comp)
     if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0:
-        print "Edge string(",ags.adcircedgestringid+1,"): Length = ", ags.adcircedgestringlen
+        print("Edge string(",ags.adcircedgestringid+1,"): Length = ", ags.adcircedgestringlen)
 
     ######################################################
     # Find series to modify during coupling.
@@ -45,11 +46,11 @@ def adcirc_init_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct
 
     if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0 and ags.myid==0:
         nbvStartIndex=sum(ags.pb.nvell[:ags.adcircedgestringid])
-        print "Original: Flux time increment FTIMINC =", ags.pg.ftiminc,\
+        print("Original: Flux time increment FTIMINC =", ags.pg.ftiminc,\
                 "\nOriginal: Flux times:\nQTIME1 =", ags.pg.qtime1, \
                 "\nQTIME2 =", ags.pg.qtime2, \
                 "\nOriginal: Flux values:\nQNIN1  =\n",  ags.pg.qnin1[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes], \
-                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes]
+                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes])
 
     ##################################################
     # Replace the flux time increment value.
@@ -115,11 +116,11 @@ def adcirc_init_bc_from_gssha_hydrograph(ags): # ags is of type adcircgsshatruct
                                                ## Ensure this gets replaced in set_bc function.
 
     if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0:
-        print "Replaced: Flux time increment FTIMINC =", ags.pg.ftiminc,\
+        print("Replaced: Flux time increment FTIMINC =", ags.pg.ftiminc,\
                 "\nReplaced: Flux times:\nQTIME1 =", ags.pg.qtime1, \
                 "\nQTIME2 =", ags.pg.qtime2, \
                 "\nReplaced: Flux values:\nQNIN1  =\n",  ags.pg.qnin1[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes], \
-                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes]
+                "\nQNIN2  =\n",  ags.pg.qnin2[nbvStartIndex : nbvStartIndex+ags.adcircedgestringnnodes])
 
 ################################################################################
 if __name__ == '__main__':

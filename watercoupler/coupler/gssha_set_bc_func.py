@@ -1,19 +1,19 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 
-############################################################################################################################################################
 import gsshapython.sclass.build_options   as gsshaopts
 import gsshapython.sclass.define_h        as gsshadefine
 import gsshapython.sclass.fnctn_h         as gsshafnctn
 from gsshapython.sclass.timeseriesdefs_h import ts_struct
 
-############################################################################################################################################################
+################################################################################
 DEBUG_LOCAL = 1
 
-############################################################################################################
+################################################################################
 def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
 
     from adcircgsshastruct import SERIESLENGTH, TIME_TOL
@@ -23,9 +23,9 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
     ts = ags.mvs[0].bound_ts_ptr[0]
 
     if (ags.pu.debug ==ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) and DEBUG_LOCAL != 0 and ags.myid == 0:
-        print
+        print()
         for i in range(ts.num_vals):
-            print'Before:(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')'
+            print('Before:(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')')
 
     ######################################################
     #SET UP gssha BC from ADCIRC.
@@ -52,11 +52,11 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
 
         # Note: Hoping whichever depth is closes to GSSHA current depth works better in damping oscillations than dmax alone!
         if (ags.pu.messg==ags.pu.on):
-            eta_sum       = ags.pmsg.pymessg_dbl_sum(my_eta_sum      , ags.adcirc_comm_comp)
-            avg_delta_eta = ags.pmsg.pymessg_dbl_sum(my_avg_delta_eta, ags.adcirc_comm_comp)
-            max_delta_eta = ags.pmsg.pymessg_dbl_max(my_max_delta_eta, ags.adcirc_comm_comp)
-            min_delta_eta = ags.pmsg.pymessg_dbl_min(my_min_delta_eta, ags.adcirc_comm_comp)
-            count         = ags.pmsg.pymessg_dbl_sum(count           , ags.adcirc_comm_comp)
+            eta_sum       = ags.pmsg.pymsg_dbl_sum(my_eta_sum      , ags.adcirc_comm_comp)
+            avg_delta_eta = ags.pmsg.pymsg_dbl_sum(my_avg_delta_eta, ags.adcirc_comm_comp)
+            max_delta_eta = ags.pmsg.pymsg_dbl_max(my_max_delta_eta, ags.adcirc_comm_comp)
+            min_delta_eta = ags.pmsg.pymsg_dbl_min(my_min_delta_eta, ags.adcirc_comm_comp)
+            count         = ags.pmsg.pymsg_dbl_sum(count           , ags.adcirc_comm_comp)
         else:
             eta_sum       = my_eta_sum
             avg_delta_eta = my_avg_delta_eta
@@ -70,10 +70,10 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
         ags.adcirc_hprev_len = count
 
         if ags.pu.debug == ags.pu.on or DEBUG_LOCAL != 0:
-            print "PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Average eta = ", avg_eta
-            print "PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Maximum delta_eta = ", max_delta_eta
-            print "PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Minimum delta_eta = ", min_delta_eta
-            print "PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Average delta_eta = ", avg_delta_eta
+            print("PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Average eta = ", avg_eta)
+            print("PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Maximum delta_eta = ", max_delta_eta)
+            print("PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Minimum delta_eta = ", min_delta_eta)
+            print("PE[",ags.myid,"] Edge string(",ags.adcircedgestringid,"): Average delta_eta = ", avg_delta_eta)
 
         if ags.couplingtype == 'gdAdg':
             DT = 0.0
@@ -88,7 +88,7 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
         #    DT += ags.effectivegsshadt
         #if ags.couplingtype == 'gdAdg':
         #    DT += ags.effectivegsshadt
-        #print DT, DT/86400.0
+        #print(DT, DT/86400.0)
 
         # Shift the time series
         for i in range(ts.num_vals-1):
@@ -132,11 +132,11 @@ def gssha_set_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
         ts.jul_time[ts.num_vals-1] += ts.jul_time[ts.num_vals-3]-ts.jul_time[ts.num_vals-4]
 
     if (ags.pu.debug ==ags.pu.on or gsshaopts._DEBUG == gsshadefine.ON) and DEBUG_LOCAL != 0 and ags.myid == 0:
-        print 'Current GSSHA julian time =', ags.mvs[0].btime
+        print('Current GSSHA julian time =', ags.mvs[0].btime)
         #assert(ags.mvs[0].btime <= ts.jul_time[ts.num_vals-2])
         #assert(ags.mvs[0].btime >= ts.jul_time[0])
         for i in range(ts.num_vals):
-            print'After :(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')'
+            print('After :(t,v)[',i,'] = (', ts.jul_time[i],',', ts.val[i],')')
 
 ############################################################################################################
 if __name__ == '__main__':

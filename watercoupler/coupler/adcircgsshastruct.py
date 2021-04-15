@@ -3,20 +3,12 @@
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 import sys
 import ctypes as ct
 
-################################################################################
-import pyadcirc as pa
-#ps    = pa.sizes
-#pg    = pa.pyglobal
-#pm    = pa.pymesh
-#pmsg  = pa.pymessenger
-#pb    = pa.pyboundaries
-#pmain = pa.pyadcirc_mod
-#pu    = pa.utilities
+from pyADCIRC import pyadcirc as pa
 
-################################################################################
 import gsshapython.sclass.define_h      as gsshadefine
 import gsshapython.sclass.fnctn_h       as gsshafnctn
 import gsshapython.sclass.main_struct_h as gsshamain
@@ -80,9 +72,9 @@ class adcircgsshastruct(): #Note: This is not a ctypes Structure!!!!
         self.gsshatimefact=GSSHA_TIME_FACTOR ## Minutes to seconds conversion, since niter is in mins.
         self.gsshahydrofact=1.0 # GSSHA_CUFTPERSEC_TO_CUMPERSEC may not be required after all since GSSHA internally seems to use cu.m/s.
 
-    from _coupler_initialize import adcircgssha_coupler_initialize as coupler_initialize
-    from _coupler_run import adcircgssha_coupler_run as coupler_run
-    from _coupler_finalize import adcircgssha_coupler_finalize as coupler_finalize
+    from ._coupler_initialize import adcircgssha_coupler_initialize as coupler_initialize
+    from ._coupler_run import adcircgssha_coupler_run as coupler_run
+    from ._coupler_finalize import adcircgssha_coupler_finalize as coupler_finalize
 
 
 ################################################################################
@@ -92,17 +84,18 @@ if __name__=='__main__':
     ct.pythonapi.Py_GetArgcArgv(ct.byref(argc), ct.byref(argv))
 
     if DEBUG_LOCAL == 1:
-        print 'Number of arguments passed to python:', argc.value, '\nArgs:',
-        for i in range(argc.value):
-            print argv[i],
-        print
+        print('Number of arguments passed to python: {0} \nArgs:'.format(
+            argc.value), end = '')
+        [print(argv[i], end = ' ') for i in range(argc.value)]
+        print()
     if argc.value>=6:
-        print "ADCIRC project   :", argv[argc.value-1]
-        print "GSSHA project :", argv[argc.value-2]
+        print("ADCIRC project:", argv[argc.value-1])
+        print("GSSHA project :", argv[argc.value-2])
         ags = adcircgsshastruct()
         ags.coupler_initialize(argc, argv)
         ags.coupler_run()
         ags.coupler_finalize()
     else:
-        print("\nPath to ADCIRC and GSSHA input files not specified.\nExiting without testing.")
+        print("\nPath to ADCIRC and GSSHA input files not specified."
+              "\nExiting without testing.")
 

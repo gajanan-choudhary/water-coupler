@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #------------------------------------------------------------------------------#
 # watercoupler - Software for coupling hydrodynamic and hydrologic software
 # LICENSE: BSD 3-Clause "New" or "Revised"
 #------------------------------------------------------------------------------#
+from __future__ import absolute_import, print_function
 
 from ctypes import c_double as ctypes_c_double
 
@@ -13,10 +14,10 @@ import gsshapython.sclass.define_h      as gsshadefine
 import gsshapython.sclass.fnctn_h       as gsshafnctn
 
 ################################################################################
-from adcirc_init_bc_func import adcirc_init_bc_from_gssha_hydrograph
-from adcirc_set_bc_func  import adcirc_set_bc_from_gssha_hydrograph
-from gssha_init_bc_func  import gssha_init_bc_from_adcirc_depths
-from gssha_set_bc_func   import gssha_set_bc_from_adcirc_depths
+from .adcirc_init_bc_func import adcirc_init_bc_from_gssha_hydrograph
+from .adcirc_set_bc_func  import adcirc_set_bc_from_gssha_hydrograph
+from .gssha_init_bc_func  import gssha_init_bc_from_adcirc_depths
+from .gssha_set_bc_func   import gssha_set_bc_from_adcirc_depths
 
 ################################################################################
 DEBUG_LOCAL = 1
@@ -34,7 +35,7 @@ DEBUG_LOCAL = 1
 #########################################################################functag
 def coupler_run_gssha_driving_adcirc(ags):
 
-    from adcircgsshastruct     import TIME_TOL
+    from .adcircgsshastruct     import TIME_TOL
 
     adcirc_init_bc_from_gssha_hydrograph(ags)
     if ags.couplingtype == 'gdAdg':
@@ -53,10 +54,10 @@ def coupler_run_gssha_driving_adcirc(ags):
         ags.mvs[0].go    = gsshatypes.FALSE
     if ags.pu.messg == ags.pu.on:
         if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-            print 'PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer
+            print('PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer)
         ags.mvs[0].timer = ags.pmsg.pymsg_dbl_max(ags.mvs[0].timer, ags.adcirc_comm_comp)
         if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-            print 'PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer
+            print('PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer)
 
     while (ags.adcirctprev<ags.adcirctfinal or ags.mvs[0].timer<ags.gsshatfinal):
         ######################################################
@@ -83,14 +84,14 @@ def coupler_run_gssha_driving_adcirc(ags):
                 ags.mvs[0].single_event_end = ags.mvs[0].b_lt_start + ags.mvs[0].niter/1440.0 #gsshatfinal was original niter in mins
 
             if gsshaopts._DEBUG == gsshadefine.ON and DEBUG_LOCAL != 0 and ags.myid == 0:
-                print "\n*******************************************\nRunning GSSHA:"
-                print "dt             =", ags.mvs[0].dt
-                print "timer          =", ags.mvs[0].timer
-                print "niter          =", ags.mvs[0].niter
-                print "superdt        =", superdt
-                print "end time       =", ags.mvs[0].timer*ags.gsshatimefact + superdt
+                print("\n*******************************************\nRunning GSSHA:")
+                print("dt             =", ags.mvs[0].dt)
+                print("timer          =", ags.mvs[0].timer)
+                print("niter          =", ags.mvs[0].niter)
+                print("superdt        =", superdt)
+                print("end time       =", ags.mvs[0].timer*ags.gsshatimefact + superdt)
             elif ags.myid==0:
-                print "\n*******************************************\nRunning GSSHA:"
+                print("\n*******************************************\nRunning GSSHA:")
 
             # Run GSSHA only on 1 processsor: PE 0.
             if ags.myid == 0:
@@ -104,10 +105,10 @@ def coupler_run_gssha_driving_adcirc(ags):
                 ags.mvs[0].go    = gsshatypes.FALSE
             if ags.pu.messg == ags.pu.on:
                 if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-                    print 'PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer
+                    print('PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer)
                 ags.mvs[0].timer = ags.pmsg.pymsg_dbl_max(ctypes_c_double(ags.mvs[0].timer), ags.adcirc_comm_comp)
                 if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-                    print 'PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer
+                    print('PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer)
 
         else:
             ags.gssharunflag = gsshadefine.OFF
@@ -128,13 +129,13 @@ def coupler_run_gssha_driving_adcirc(ags):
                 ags.adcirctnext = ags.adcirctfinal
 
             if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0 and ags.myid == 0:
-                print "\n****************************************\nRunning ADCIRC:"
-                print "dt             =", ags.adcircdt
-                print "t_prev         =", ags.adcirctprev
-                print "t_final        =", ags.adcirctnext
-                print "ntsteps        =", ntsteps
+                print("\n****************************************\nRunning ADCIRC:")
+                print("dt             =", ags.adcircdt)
+                print("t_prev         =", ags.adcirctprev)
+                print("t_final        =", ags.adcirctnext)
+                print("ntsteps        =", ntsteps)
             elif ags.myid==0:
-                print "\n****************************************\nRunning ADCIRC:"
+                print("\n****************************************\nRunning ADCIRC:")
 
             # Run ADCIRC
             ags.pmain.pyadcirc_run(ntsteps)
@@ -151,7 +152,7 @@ def coupler_run_gssha_driving_adcirc(ags):
 #########################################################################functag
 def coupler_run_adcirc_driving_gssha(ags):
 
-    from adcircgsshastruct     import TIME_TOL
+    from .adcircgsshastruct     import TIME_TOL
 
     gssha_init_bc_from_adcirc_depths(ags)
     if ags.couplingtype == 'AdgdA':
@@ -170,10 +171,10 @@ def coupler_run_adcirc_driving_gssha(ags):
         ags.mvs[0].go    = gsshatypes.FALSE
     if ags.pu.messg == ags.pu.on:
         if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-            print 'PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer
+            print('PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer)
         ags.mvs[0].timer = ags.pmsg.pymsg_dbl_max(ags.mvs[0].timer, ags.adcirc_comm_comp)
         if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-            print 'PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer
+            print('PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer)
 
     while (ags.adcirctprev<ags.adcirctfinal or ags.mvs[0].timer<ags.gsshatfinal):
         ######################################################
@@ -188,13 +189,13 @@ def coupler_run_adcirc_driving_gssha(ags):
                 ags.adcirctnext = ags.adcirctfinal
 
             if ags.pu.debug == ags.pu.on and DEBUG_LOCAL != 0 and ags.myid == 0:
-                print "\n****************************************\nRunning ADCIRC:"
-                print "dt             =", ags.adcircdt
-                print "t_prev         =", ags.adcirctprev
-                print "t_final        =", ags.adcirctnext
-                print "ntsteps        =", ntsteps
+                print("\n****************************************\nRunning ADCIRC:")
+                print("dt             =", ags.adcircdt)
+                print("t_prev         =", ags.adcirctprev)
+                print("t_final        =", ags.adcirctnext)
+                print("ntsteps        =", ntsteps)
             elif ags.myid==0:
-                print "\n****************************************\nRunning ADCIRC:"
+                print("\n****************************************\nRunning ADCIRC:")
 
             # Run ADCIRC
             ags.pmain.pyadcirc_run(ntsteps)
@@ -231,14 +232,14 @@ def coupler_run_adcirc_driving_gssha(ags):
                 ags.mvs[0].single_event_end = ags.mvs[0].b_lt_start + ags.mvs[0].niter/1440.0 #gsshatfinal was original niter in mins
 
             if gsshaopts._DEBUG == gsshadefine.ON and DEBUG_LOCAL != 0 and ags.myid == 0:
-                print "\n*******************************************\nRunning GSSHA:"
-                print "dt             =", ags.mvs[0].dt
-                print "timer          =", ags.mvs[0].timer
-                print "niter          =", ags.mvs[0].niter
-                print "superdt        =", superdt
-                print "end time       =", ags.mvs[0].timer*ags.gsshatimefact + superdt
+                print("\n*******************************************\nRunning GSSHA:")
+                print("dt             =", ags.mvs[0].dt)
+                print("timer          =", ags.mvs[0].timer)
+                print("niter          =", ags.mvs[0].niter)
+                print("superdt        =", superdt)
+                print("end time       =", ags.mvs[0].timer*ags.gsshatimefact + superdt)
             elif ags.myid==0:
-                print "\n*******************************************\nRunning GSSHA:"
+                print("\n*******************************************\nRunning GSSHA:")
 
             # Run GSSHA only on 1 processsor: PE 0.
             if ags.myid == 0:
@@ -252,10 +253,10 @@ def coupler_run_adcirc_driving_gssha(ags):
                 ags.mvs[0].go    = gsshatypes.FALSE
             if ags.pu.messg == ags.pu.on:
                 if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-                    print 'PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer
+                    print('PE[',ags.myid,'] Before messg: timer = ', ags.mvs[0].timer)
                 ags.mvs[0].timer = ags.pmsg.pymsg_dbl_max(ctypes_c_double(ags.mvs[0].timer), ags.adcirc_comm_comp)
                 if (ags.pu.debug ==ags.pu.on or DEBUG_LOCAL != 0):
-                    print 'PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer
+                    print('PE[',ags.myid,'] After messg : timer = ', ags.mvs[0].timer)
 
         else:
             ags.gssharunflag = gsshadefine.OFF
@@ -287,22 +288,22 @@ def adcircgssha_coupler_run(self):
         run_func = coupler_run_adcirc_driving_gssha
 
     else:
-        print 'Unkown coupling type supplied by user:', self.couplingtype, '\nExiting.'
+        print('Unkown coupling type supplied by user:', self.couplingtype, '\nExiting.')
         return
 
-    print "\n\n***************************************************************"
-    print     "***************************************************************"
-    print     run_string
-    print     "***************************************************************"
-    print     "***************************************************************"
+    print("\n\n***************************************************************")
+    print(    "***************************************************************")
+    print(    run_string)
+    print(    "***************************************************************")
+    print(    "***************************************************************")
 
     run_func(self)
 
-    print "\n\n***************************************************************"
-    print     "***************************************************************"
-    print     "Finished", run_string
-    print     "***************************************************************"
-    print     "***************************************************************"
+    print("\n\n***************************************************************")
+    print(    "***************************************************************")
+    print(    "Finished", run_string)
+    print(    "***************************************************************")
+    print(    "***************************************************************")
 
 
 #########################################################################functag
