@@ -14,7 +14,7 @@ DEBUG_LOCAL = 1
 
 ################################################################################
 def gssha_init_bc_from_adcirc_depths(ags): # ags is of type adcircgsshatruct.
-    from adcircgsshastruct import SERIESLENGTH
+    from .adcircgsshastruct import SERIESLENGTH
     assert(ags.mvs[0].yes_head_bound == 1)
     assert(ags.mvs[0].bound_ts == 1)
     assert(ags.mvs[0].bound_ts_ptr)
